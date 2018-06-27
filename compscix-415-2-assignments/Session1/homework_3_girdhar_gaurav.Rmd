@@ -8,3 +8,245 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+```{r}
+library(tidyverse)
+```
+
+#Excercise
+Question 1
+
+What is the problem with this plot? How could you improve it?
+
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_point()
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_point()
+```
+
+The problem with the plot is "OverPlotting". Because fo rouding off, some of the values are overlapping on others.
+
+Question 2
+
+What parameters to geom_jitter() control the amount of jittering?
+
+Answer 2
+
+"width" & "height" are the parameters which control the amount of jittering.
+
+Question 3
+
+Compare and contrast geom_jitter() with geom_count()
+
+Answer 3
+
+```{r}
+ggplot(data = mpg) + 
+  geom_jitter(mapping = aes(x = displ, y = hwy),position = "jitter")
+
+```
+
+```{r}
+ggplot(data = mpg) + 
+  geom_count(mapping = aes(x = displ, y = hwy),position = "identity")
+```
+
+Jitter Overlaps whereas geom_count counts the overlapping count.
+
+Question 4
+
+Whatâ€™s the default position adjustment for geom_boxplot()? Create a visualisation of the mpg dataset that demonstrates it.
+
+Default Position is Dodge
+
+```{r}
+ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = drv, y = cty))
+```
+
+```{r}
+ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = drv, y = cty), position = 'identity')
+```
+
+#Excercise 3.9.1
+
+Question 1
+
+What does labs() do? Read the documentation.
+
+Answer 1
+
+```{r}
+?labs()
+```
+
+Question 2
+
+What does the plot below tell you about the relationship between city and highway mpg? Why is coord_fixed() important? What does geom_abline() do?
+
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline() +
+  coord_fixed()
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline() +
+  coord_fixed()
+```
+
+Answer 2
+
+geom_abline is used to plot lines defined by slope (a) and intercept (b) parameters. Used with no arguments, like here, it will plot a line with slope 1 and intercept 0, so passing through the origin at 45 degrees. coord_fixed is important because x and y have the same units, so we want to maintain the slope of the line, and see that city mileage is worse than highway, but more importantly that this is better explained by a constant offset than a multiplicative factor.
+
+#4.4 Practice
+
+Question 1
+
+Why does this code not work?
+
+my_variable <- 10
+my_variable
+#> Error in eval(expr, envir, enclos): object 'my_varÄ±able' not found
+
+```{r}
+my_variable <- 10
+my_variable
+```
+
+Question 2
+
+Tweak each of the following R commands so that they run correctly:
+
+library(tidyverse)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+fliter(mpg, cyl = 8) +
+filter(diamond, carat > 3)
+
+```{r}
+library(tidyverse)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+  fliter(mpg, cyl = 8)
+  
+  
+  filter(diamond, carat > 3)
+```{r}
+cylinder <- filter(mpg, cyl == 8)
+caratlist <- filter(diamonds, carat > 3)
+caratlist
+```
+
+#Excercise 5.4.2
+
+Questions 1
+
+Find all flights that
+
+Had an arrival delay of two or more hours
+Flew to Houston (IAH or HOU)
+Were operated by United, American, or Delta
+Departed in summer (July, August, and September)
+Arrived more than two hours late, but didnâ€™t leave late
+Were delayed by at least an hour, but made up over 30 minutes in flight
+Departed between midnight and 6am (inclusive)
+
+```{r}
+library(nycflights13)
+```
+
+```{r}
+filter(flights, arr_delay > 120)
+```
+
+
+```{r}
+filter(flights, dest == 'IAH' | dest == 'HOU')
+```
+
+```{r}
+filter(flights, carrier == 'UA' | carrier == 'DL' | carrier == 'AA')
+```
+
+```{r}
+filter(flights, month > 6 & month < 10)
+```
+
+```{r}
+filter(flights, dep_delay == 0 & arr_delay > 120)
+```
+
+```{r}
+filter(flights, dep_delay >60 & (dep_delay - arr_delay) > 30)
+```
+
+```{r}
+filter(flights, dep_time >= 0000 & dep_time <= 0600)
+```
+
+Question 3
+
+How many flights have a missing dep_time? What other variables are missing? What might these rows represent?
+
+```{r}
+summary(flights)
+```
+
+8255 flights have a missing dep_time, 8255 have a missing dep_delay, 8713 have a missing arr_time, 9430 have a missing arr_delay, and 9430 have a missing air_time. We can speculate that these are flights that failed to depart or arrive, since a flight that departs normally but is then rerouted will probably have a normally recorded departure but no similar record for it's arrival. However, these could also just be lost data about perfectly normal flights.
+
+Question 4
+
+Why is NA ^ 0 not missing? Why is NA | TRUE not missing? Why is FALSE & NA not missing? Can you figure out the general rule? (NA * 0 is a tricky counterexample!)
+
+NA ^ 0 evaluates to 1 because anything to the power of 0 is 1, so although we didn't know the original value, we know it's being taken to the zeroth power.
+
+With NA | TRUE, since the | operator returns TRUE if either of the terms are true, the whole expression returns true because the right half returns true. This is easier to see in an expression like NA | 5<10 (since 5 is indeed less than 10).
+
+For the next example, we know that & returns TRUE when both terms are true. So, for example, TRUE & TRUE evaluates to TRUE. In FALSE & NA, one of the terms is false, so the expression evaluates to FALSE. As does something like FALSE & TRUE.
+
+NA * 0 could be argued to be because the NA could represent Inf, and Inf * 0 is NaN (Not a Number), rather than NA. However, I suspect that these results are dictated as much by what answer is natural, quick and sensible in C as by mathematical edge cases.
+
+#Excercise 5.4.1
+
+Brainstorm as many ways as possible to select dep_time, dep_delay, arr_time, and arr_delay from flights.
+
+```{r}
+# standard ways
+select(flights, dep_time,  dep_delay, arr_time, arr_delay)
+select(flights, c(dep_time,  dep_delay, arr_time, arr_delay))
+flights %>% select(dep_time,  dep_delay, arr_time, arr_delay)
+flights %>% select_("dep_time",  "dep_delay", "arr_time", "arr_delay")
+flights %>% select_(.dots=c("dep_time",  "dep_delay", "arr_time", "arr_delay"))
+
+# fancier ways
+flights %>% select(dep_time:arr_delay, -c(contains("sched")))
+flights %>% select(ends_with("time"),  ends_with("delay")) %>% select(-c(starts_with("sched"), starts_with("air")))
+flights %>% select(contains("dep"), contains("arr"), -contains("sched"), -carrier)
+flights %>% select(matches("^dep|arr_delay|time$"))
+flights %>% select(matches("^dep|^arr"))
+flights %>% select(matches("^dep|^arr.*time$|delay$"))
+flights %>% select(matches("^dep|^arr_time$|delay$"))
+
+head(flights)
+```
+
+Question 3
+
+What does the one_of() function do? Why might it be helpful in conjunction with this vector?
+
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+
+It returns all the variables you ask for, for example ones stored in a vector.
+
+```{r}
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+flights %>% select(one_of(vars))
+```
