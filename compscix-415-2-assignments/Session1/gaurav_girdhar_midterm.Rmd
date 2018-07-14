@@ -2,6 +2,7 @@
 title: "COMPSCIX 415.2 Homework 5/Midterm"
 author: "Gaurav Girdhar"
 date: "7/6/2018"
+gitlink: "https://github.com/ggirdhar28/compscix-415-2-assignments"
 output: 
   html_document:
     toc: true # table of content true
